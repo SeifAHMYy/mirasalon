@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MIRA hair | &amp; colour studio · Silver Lake, Los Angeles</title>
 <meta name="description" content="A six-chair hair and colour studio on Sunset in Silver Lake, LA. Precision cuts, honest colour, scalp care. Book a chair.">
 <meta name="theme-color" content="#0B0A09">
@@ -79,7 +79,8 @@ body::after{
    ============================================================ */
 .wrap{
   width:100%;max-width:1440px;margin:0 auto;
-  padding-left:var(--pad-x);padding-right:var(--pad-x);
+  padding-left:max(var(--pad-x), env(safe-area-inset-left));
+  padding-right:max(var(--pad-x), env(safe-area-inset-right));
 }
 section{scroll-margin-top:88px}
 
@@ -250,6 +251,7 @@ html.has-cursor textarea{cursor:text}
    ============================================================ */
 .nav{
   position:sticky;top:0;z-index:100;
+  padding-top:env(safe-area-inset-top);
   border-bottom:1px solid transparent;
   transition:background .4s var(--ease),border-color .4s var(--ease),
              backdrop-filter .4s,opacity .8s var(--ease);
@@ -323,7 +325,7 @@ html.is-ready .nav{opacity:1}
 
 .mobile-menu{
   position:fixed;inset:0;z-index:90;background:var(--bg);
-  padding:110px var(--pad-x) 48px;
+  padding:calc(110px + env(safe-area-inset-top)) var(--pad-x) calc(48px + env(safe-area-inset-bottom));
   display:flex;flex-direction:column;gap:4px;
   transform:translateY(-101%);visibility:hidden;
   transition:transform .55s var(--ease),visibility .55s;
@@ -503,8 +505,8 @@ html.is-ready .hero [data-fade]{opacity:1;transform:none}
   scroll-snap-type:x mandatory;
   padding-top:8px;
   padding-bottom:28px;
-  padding-left:max(var(--pad-x), calc((100vw - 1440px)/2 + var(--pad-x)));
-  padding-right:var(--pad-x);
+  padding-left:max(var(--pad-x), calc((100vw - 1440px)/2 + var(--pad-x)), env(safe-area-inset-left));
+  padding-right:max(var(--pad-x), env(safe-area-inset-right));
   scrollbar-width:none;
   cursor:grab;
   -webkit-overflow-scrolling:touch;
@@ -905,7 +907,8 @@ html.is-ready .hero [data-fade]{opacity:1;transform:none}
 }
 .foot-bottom{
   display:flex;flex-wrap:wrap;justify-content:space-between;
-  gap:12px 28px;padding:22px 0 30px;
+  gap:12px 28px;
+  padding:22px 0 calc(30px + env(safe-area-inset-bottom));
   border-top:1px solid var(--line);
   font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;
   color:var(--muted);
@@ -920,8 +923,9 @@ html.is-ready .hero [data-fade]{opacity:1;transform:none}
 .mobile-bar{
   position:fixed;left:0;right:0;bottom:0;z-index:80;
   display:none;gap:1px;
-  background:var(--line);
+  background:var(--surface);
   border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom);
   transform:translateY(101%);
   transition:transform .45s var(--ease);
 }
@@ -931,6 +935,7 @@ html.is-ready .hero [data-fade]{opacity:1;transform:none}
   padding:15px 12px;background:var(--surface);
   text-decoration:none;font-size:13px;font-weight:500;letter-spacing:.04em;
 }
+.mobile-bar a + a{box-shadow:-1px 0 0 var(--line)}
 .mobile-bar a.primary{background:var(--accent);color:var(--bg)}
 
 /* ============================================================
@@ -987,8 +992,8 @@ html.is-ready .hero [data-fade]{opacity:1;transform:none}
    ============================================================ */
 .chat-fab{
   position:fixed;
-  right:clamp(16px,3vw,28px);
-  bottom:clamp(16px,3vw,28px);
+  right:max(clamp(16px,3vw,28px), calc(env(safe-area-inset-right) + 12px));
+  bottom:calc(clamp(16px,3vw,28px) + env(safe-area-inset-bottom));
   z-index:95;
   display:inline-flex;align-items:center;gap:10px;
   padding:13px 18px 13px 15px;
@@ -1018,11 +1023,15 @@ html.is-ready .hero [data-fade]{opacity:1;transform:none}
 body.chat-open .chat-fab{opacity:0;transform:scale(.85);pointer-events:none}
 body.chat-open .mobile-bar{transform:translateY(101%)}
 
+/* NOTE: z-index raised to 500 so the panel always sits ABOVE the sticky nav
+   (z-index:100) and the scroll-progress bar (z-index:300). This keeps the X
+   button clickable on small screens where the panel is full-screen and would
+   otherwise be covered by the hamburger toggle. */
 .chat-panel{
   position:fixed;
-  right:clamp(16px,3vw,28px);
-  bottom:calc(clamp(16px,3vw,28px) + 64px);
-  z-index:96;
+  right:max(clamp(16px,3vw,28px), calc(env(safe-area-inset-right) + 12px));
+  bottom:calc(clamp(16px,3vw,28px) + 64px + env(safe-area-inset-bottom));
+  z-index:500;
   width:min(392px,calc(100vw - 32px));
   height:min(600px,calc(100vh - 130px));
   height:min(600px,calc(100svh - 130px));
@@ -1146,6 +1155,7 @@ body.chat-open .mobile-bar{transform:translateY(101%)}
 /* body + messages */
 .chat-body{
   flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
   padding:18px 16px 14px;
   display:flex;flex-direction:column;gap:12px;
   scrollbar-width:thin;scrollbar-color:var(--line-2) transparent;
@@ -1168,6 +1178,7 @@ body.chat-open .mobile-bar{transform:translateY(101%)}
 .bubble{
   padding:11px 14px;border-radius:2px;
   font-size:13.5px;line-height:1.58;
+  overflow-wrap:anywhere;word-break:break-word;
 }
 .msg-bot .bubble{
   background:var(--surface-2);
@@ -1242,19 +1253,45 @@ body.chat-open .mobile-bar{transform:translateY(101%)}
   body.bar-visible .chat-fab{bottom:calc(74px + env(safe-area-inset-bottom))}
 }
 
-@media (max-width:600px){
+/* ------------------------------------------------------------
+   COMPACT / MOBILE CHAT — full screen, keyboard aware
+   ------------------------------------------------------------ */
+@media (max-width:768px), (max-height:520px) and (hover:none){
   .chat-panel{
-    left:0;right:0;top:0;bottom:0;
-    width:100%;height:100vh;height:100svh;
+    left:0;right:0;top:0;bottom:auto;
+    width:100%;
+    height:100vh;
+    height:100dvh;
+    max-height:none;
     border:0;border-radius:0;box-shadow:none;
     transform-origin:bottom center;
+    z-index:500;
   }
-  .chat-head{padding-top:calc(15px + env(safe-area-inset-top))}
-  .chat-toast{top:calc(74px + env(safe-area-inset-top))}
-  .chat-input-row{padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+  .chat-head{
+    padding:calc(12px + env(safe-area-inset-top)) 14px 12px 16px;
+  }
+  .chat-toast{top:calc(68px + env(safe-area-inset-top))}
+  .chat-body{padding:14px 14px 12px}
+  .msg{max-width:92%}
+  .bubble{font-size:14px}
+  .chat-input-row{
+    padding:10px 12px calc(10px + env(safe-area-inset-bottom)) 16px;
+  }
   .chat-input-row input{font-size:16px}
+  .chat-close{width:40px;height:40px;font-size:20px}
+  .chat-send{width:42px;height:42px}
   .chat-fab{padding:12px 16px 12px 13px;font-size:10px}
   body.chat-open{overflow:hidden}
+}
+
+/* short viewports (landscape phones) — reclaim vertical space */
+@media (max-height:560px){
+  .chat-note{display:none}
+  .chat-head{padding-top:calc(8px + env(safe-area-inset-top));padding-bottom:8px}
+  .chat-toast{top:calc(62px + env(safe-area-inset-top))}
+  .chat-body{padding-top:10px;padding-bottom:8px;gap:8px}
+  .bubble{padding:9px 12px;font-size:13px}
+  .chat-avatar{width:32px;height:32px;font-size:15px}
 }
 
 /* ============================================================
@@ -2437,6 +2474,86 @@ const WEBHOOK_AUTH_VALUE  = 'secretsalondemov1';
     }
   }
 
+  /* ============================================================
+     VIEWPORT HANDLING — mobile / compact fullscreen chat
+     ============================================================ */
+  var mqCompact = window.matchMedia('(max-width: 768px), (max-height: 520px) and (hover: none)');
+  var vv = window.visualViewport || null;
+  var pageLocked = false;
+  var lockedY = 0;
+  var syncRaf = null;
+
+  function isCompact() { return mqCompact.matches; }
+
+  /* iOS-safe scroll lock (position:fixed technique) */
+  function lockPage() {
+    if (pageLocked || !isCompact()) return;
+    lockedY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    document.body.style.position = 'fixed';
+    document.body.style.top = (-lockedY) + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+    pageLocked = true;
+  }
+
+  function unlockPage() {
+    if (!pageLocked) return;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    pageLocked = false;
+    window.scrollTo(0, lockedY);
+  }
+
+  /* Keep the panel glued to the visual viewport when the keyboard opens */
+  function syncChatViewport() {
+    if (!isOpen || !isCompact()) {
+      panel.style.top = '';
+      panel.style.height = '';
+      panel.style.bottom = '';
+      return;
+    }
+    if (vv) {
+      panel.style.top = vv.offsetTop + 'px';
+      panel.style.height = vv.height + 'px';
+      panel.style.bottom = 'auto';
+    }
+  }
+
+  function keepLatestInView() {
+    if (!isOpen || !isCompact()) return;
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function scheduleSync() {
+    if (syncRaf) return;
+    syncRaf = requestAnimationFrame(function () {
+      syncRaf = null;
+      syncChatViewport();
+      keepLatestInView();
+    });
+  }
+
+  if (vv) {
+    vv.addEventListener('resize', scheduleSync);
+    vv.addEventListener('scroll', scheduleSync);
+  }
+
+  window.addEventListener('resize', function () {
+    if (isOpen) {
+      if (isCompact()) lockPage();
+      else unlockPage();
+    }
+    scheduleSync();
+  });
+
+  window.addEventListener('orientationchange', function () {
+    setTimeout(scheduleSync, 300);
+  });
+
   /* ---------- open / close ---------- */
   function openChat() {
     if (!isOpen) {
@@ -2445,7 +2562,12 @@ const WEBHOOK_AUTH_VALUE  = 'secretsalondemov1';
       panel.setAttribute('aria-hidden', 'false');
       fab.setAttribute('aria-expanded', 'true');
       document.body.classList.add('chat-open');
+
+      if (isCompact()) lockPage();
+      syncChatViewport();
+
       setTimeout(function () {
+        syncChatViewport();
         try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
       }, 360);
     }
@@ -2459,6 +2581,14 @@ const WEBHOOK_AUTH_VALUE  = 'secretsalondemov1';
     panel.setAttribute('aria-hidden', 'true');
     fab.setAttribute('aria-expanded', 'false');
     document.body.classList.remove('chat-open');
+
+    try { input.blur(); } catch (e) {}
+
+    unlockPage();
+    panel.style.top = '';
+    panel.style.height = '';
+    panel.style.bottom = '';
+
     try { fab.focus({ preventScroll: true }); } catch (e) { fab.focus(); }
   }
 
